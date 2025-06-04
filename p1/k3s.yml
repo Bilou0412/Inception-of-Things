@@ -1,0 +1,26 @@
+- hosts: all
+  become: true
+  tasks:
+
+    - apt:
+        name: curl
+        state: present
+
+    - shell: curl -sfL https://get.k3s.io | \
+       INSTALL_K3S_EXEC="server --node-ip=192.168.56.110" sh -
+      when: inventory_hostname == "bmoudachS"
+
+    - command: cat /var/lib/rancher/k3s/server/node-token
+      when: inventory_hostname == "bmoudachSW"
+      delegate_to: bmoudachS
+      register: token
+      retries: 10
+      delay: 3
+      until: token.stdout != ""
+
+    - shell: |
+        curl -sfL https://get.k3s.io | \
+        K3S_URL="https://192.168.56.110:6443" \
+        K3S_TOKEN="{{ token.stdout }}" \
+        INSTALL_K3S_EXEC="agent --node-ip=192.168.56.111" sh -
+      when: inventory_hostname == "bmoudachSW"

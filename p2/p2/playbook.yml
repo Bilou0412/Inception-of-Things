@@ -1,0 +1,43 @@
+- hosts: all
+  become: true
+  tasks:
+    - name: Installer K3s
+      shell: curl -sfL https://get.k3s.io | sh -s - --write-kubeconfig-mode 644
+
+    - name: Copier kubeconfig pour vagrant
+      shell: |
+        mkdir -p /home/vagrant/.kube
+        cp /etc/rancher/k3s/k3s.yaml /home/vagrant/.kube/config
+        chown -R vagrant:vagrant /home/vagrant/.kube
+        sed -i 's/127.0.0.1/{{ ansible_default_ipv4.address }}/g' /home/vagrant/.kube/config
+
+    - name: Installer Helm
+      shell: |
+        curl -sSL https://get.helm.sh/helm-v3.14.0-linux-amd64.tar.gz | tar -xz
+        mv linux-amd64/helm /usr/local/bin/
+        rm -rf linux-amd64
+
+    - name: Déployer app1
+      shell: helm upgrade --install app-one /vagrant/app-one --namespace default
+      become_user: vagrant
+      environment:
+        KUBECONFIG: /home/vagrant/.kube/config
+
+    - name: Déployer app2
+      shell: helm upgrade --install app-two /vagrant/app-two --namespace default
+      become_user: vagrant
+      environment:
+        KUBECONFIG: /home/vagrant/.kube/config
+
+    - name: Déployer app3
+      shell: helm upgrade --install app-three /vagrant/app-three --namespace default
+      become_user: vagrant
+      environment:
+        KUBECONFIG: /home/vagrant/.kube/config
+
+    - name: Test app1
+      shell: curl -s 192.168.56.110 || echo "App not ready yet"
+      register: result
+      retries: 10        
+      delay: 5           
+      until: "'Welcome to nginx!' not in result.stdout"

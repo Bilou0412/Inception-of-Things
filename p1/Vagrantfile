@@ -1,0 +1,27 @@
+Vagrant.configure("2") do |config|
+  config.vm.box = "generic/ubuntu2204"
+  
+  config.vm.provider :libvirt do |libvirt|
+    libvirt.memory = 1024
+    libvirt.cpus = 1
+    libvirt.uri = "qemu:///system"
+    libvirt.driver = "kvm"
+  end
+  
+  machines = {
+    "bmoudachS"  => "192.168.56.110",
+    "bmoudachSW" => "192.168.56.111"
+  }
+
+  machines.each do |name, ip|
+    config.vm.define name do |vm|
+      vm.vm.hostname = name
+      vm.vm.network "private_network", ip: ip
+    end
+  end
+
+  config.vm.provision "ansible" do |ansible|
+    ansible.playbook = "k3s.yml"
+    ansible.inventory_path = "inventory.ini"
+  end
+end
