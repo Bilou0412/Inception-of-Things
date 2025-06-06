@@ -1,1 +1,0 @@
-{"rsync":{"/vagrant":{"disabled":false,"guestpath":"/vagrant","hostpath":"/home/soutin/p2","type":"rsync","__vagrantfile":true,"owner":"vagrant","group":"vagrant"}}}
