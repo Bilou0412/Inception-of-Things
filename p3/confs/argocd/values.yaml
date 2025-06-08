@@ -1,0 +1,3 @@
+server:
+  service:
+    type: LoadBalancer  # Pour accéder à l'interface web
