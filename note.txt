@@ -17,7 +17,7 @@ helm repo update
 helm install argocd argo/argo-cd   --namespace argocd   --values confs/argocd/values.yaml   --create-namespace  
 
 #Port-forward Argo CD server to access web UI
-kubectl port-forward svc/argocd-server -n argocd 8080:80
+kubectl port-forward svc/argocd-server -n argocd 8080:443
 
 #get pass for log in argo cd
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
