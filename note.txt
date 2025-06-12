@@ -27,3 +27,5 @@ kubectl get all -n argocd
 
 #apply de definition of app ArgoCD
 kubectl apply -f myapp-argocd.yaml
+
+kubectl port-forward svc/myapp -n dev 8888:8888 
