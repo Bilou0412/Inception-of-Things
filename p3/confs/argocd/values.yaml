@@ -1,3 +1,8 @@
 server:
   service:
     type: LoadBalancer  # Pour accéder à l'interface web
+
+configs:
+  cm:
+    timeout.reconciliation: 15s
+    timeout.hard.reconciliation: 0s
